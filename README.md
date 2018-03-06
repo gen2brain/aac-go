@@ -1,6 +1,6 @@
 ## aac-go
 [![TravisCI Build Status](https://travis-ci.org/gen2brain/aac-go.svg?branch=master)](https://travis-ci.org/gen2brain/aac-go) 
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/wfkqlac5ffwk5xgb?svg=true)](https://ci.appveyor.com/project/gen2brain/aac-go)
+[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/cig800cju43dbn8u?svg=true)](https://ci.appveyor.com/project/gen2brain/aac-go)
 [![GoDoc](https://godoc.org/github.com/gen2brain/aac-go?status.svg)](https://godoc.org/github.com/gen2brain/aac-go) 
 [![Go Report Card](https://goreportcard.com/badge/github.com/gen2brain/aac-go?branch=master)](https://goreportcard.com/report/github.com/gen2brain/aac-go) 
 
