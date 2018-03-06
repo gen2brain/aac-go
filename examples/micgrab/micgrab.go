@@ -65,24 +65,28 @@ func main() {
 
 	enc, err := aac.NewEncoder(buf, opts)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		os.Exit(1)
 	}
 
 	reader := bytes.NewReader(pCapturedSamples)
 
 	err = enc.Encode(reader)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		os.Exit(1)
 	}
 
 	err = enc.Close()
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		os.Exit(1)
 	}
 
 	err = ioutil.WriteFile("capture.aac", buf.Bytes(), 0644)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		os.Exit(1)
 	}
 
 	fmt.Println("Press Enter to quit...")
