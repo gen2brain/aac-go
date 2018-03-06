@@ -10,7 +10,11 @@
 
     go get -u github.com/gen2brain/aac-go
 
-### Example
+### Examples
+
+See [micgrab](https://github.com/gen2brain/aac-go/blob/master/examples/micgrab/micgrab.go) example.
+
+### Usage
 
 ```go
 package main
