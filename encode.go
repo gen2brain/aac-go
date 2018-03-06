@@ -1,4 +1,4 @@
-// Package aac provides AAC codec encoder based on [VisualOn AAC encoder library](https://github.com/mstorsjo/vo-aacenc) library.
+// Package aac provides AAC codec encoder based on [VisualOn AAC encoder](https://github.com/mstorsjo/vo-aacenc) library.
 package aac
 
 import "C"
