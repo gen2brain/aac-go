@@ -1,6 +1,7 @@
 // Package aac provides AAC codec encoder based on [VisualOn AAC encoder](https://github.com/mstorsjo/vo-aacenc) library.
 package aac
 
+//#include <stdlib.h>
 import "C"
 
 import (
@@ -66,17 +67,18 @@ func NewEncoder(w io.Writer, opts *Options) (e *Encoder, err error) {
 
 // Encode encodes data from reader.
 func (e *Encoder) Encode(r io.Reader) (err error) {
-	for {
+	inputEmpty := false
+	for !inputEmpty {
 		n, err := r.Read(e.inbuf)
 		if err != nil {
 			if err != io.EOF {
 				return err
 			}
-			break
+			inputEmpty = true
 		}
 
 		if n < e.insize {
-			break
+			inputEmpty = true
 		}
 
 		var outinfo aacenc.VoAudioOutputinfo
@@ -91,19 +93,28 @@ func (e *Encoder) Encode(r io.Reader) (err error) {
 			return err
 		}
 
-		output.Buffer = C.CBytes(e.outbuf)
-		output.Length = uint64(len(e.outbuf))
+		outputEmpty := false
+		for !outputEmpty {
+			output.Buffer = C.CBytes(e.outbuf)
+			output.Length = uint64(len(e.outbuf))
 
-		ret = aacenc.GetOutputData(&output, &outinfo)
-		err = aacenc.ErrorFromResult(ret)
-		if err != nil {
-			return err
+			ret = aacenc.GetOutputData(&output, &outinfo)
+			err = aacenc.ErrorFromResult(ret)
+			if err != nil {
+				if err != aacenc.ErrInputBufferSmall {
+					return err
+				}
+				outputEmpty = true
+			}
+
+			_, err = e.w.Write(C.GoBytes(output.Buffer, C.int(output.Length)))
+			if err != nil {
+				return err
+			}
+			C.free(output.Buffer)
 		}
 
-		_, err = e.w.Write(C.GoBytes(output.Buffer, C.int(output.Length)))
-		if err != nil {
-			return err
-		}
+		C.free(input.Buffer)
 	}
 
 	return nil
