@@ -11,35 +11,41 @@ import (
 )
 
 func main() {
-	device := mal.NewDevice()
-
-	numChannels := 2
+	numChannels := 1
 	sampleRate := 48000
 
-	var capturedSampleCount uint32
-	pCapturedSamples := make([]byte, 0)
-
-	onRecvFrames := func(framecount uint32, pSamples []byte) {
-		sizeInBytes := device.SampleSizeInBytes(device.Format())
-		sampleCount := framecount * device.Channels() * sizeInBytes
-
-		newCapturedSampleCount := capturedSampleCount + sampleCount
-		pCapturedSamples = append(pCapturedSamples, pSamples...)
-		capturedSampleCount = newCapturedSampleCount
-	}
-
-	err := device.ContextInit(nil, mal.ContextConfig{})
+	ctx, err := malgo.InitContext(nil, malgo.ContextConfig{}, func(message string) {
+		fmt.Printf("LOG <%v>\n", message)
+	})
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+	defer func() {
+		_ = ctx.Uninit()
+		ctx.Free()
+	}()
 
-	defer device.ContextUninit()
+	deviceConfig := malgo.DefaultDeviceConfig(malgo.Capture)
+	deviceConfig.Capture.Format = malgo.FormatS16
+	deviceConfig.Capture.Channels = uint32(numChannels)
 
-	config := device.ConfigInit(mal.FormatS16, uint32(numChannels), uint32(sampleRate), onRecvFrames, nil)
+	var capturedSampleCount uint32
+	pCapturedSamples := make([]byte, 0)
+
+	sizeInBytes := uint32(malgo.SampleSizeInBytes(deviceConfig.Capture.Format))
+	onRecvFrames := func(pSample2, pSample []byte, framecount uint32) {
+		sampleCount := framecount * deviceConfig.Capture.Channels * sizeInBytes
+		newCapturedSampleCount := capturedSampleCount + sampleCount
+		pCapturedSamples = append(pCapturedSamples, pSample...)
+		capturedSampleCount = newCapturedSampleCount
+	}
 
 	fmt.Println("Recording...")
-	err = device.Init(mal.Capture, nil, &config)
+	captureCallbacks := malgo.DeviceCallbacks{
+		Data: onRecvFrames,
+	}
+	device, err := malgo.InitDevice(ctx.Context, deviceConfig, captureCallbacks)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -88,9 +94,6 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-
-	fmt.Println("Press Enter to quit...")
-	fmt.Scanln()
 
 	os.Exit(0)
 }
