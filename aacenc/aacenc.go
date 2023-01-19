@@ -1,4 +1,4 @@
-// Package aacenc implements cgo bindings for [VisualOn AAC encoder library](https://github.com/mstorsjo/vo-aacenc) library.
+// Package aacenc implements cgo bindings for VisualOn AAC encoder library.
 package aacenc
 
 //#include "voAAC.h"
@@ -11,40 +11,40 @@ import (
 
 // Constants.
 const (
-	// AAC Param ID
-	VoPidAacMdoule   = 0x42211000
-	VoPidAacEncparam = VoPidAacMdoule | 0x0040
+	// VoPidAacModule - AAC Param ID
+	VoPidAacModule   = 0x42211000
+	VoPidAacEncparam = VoPidAacModule | 0x0040
 
-	// AAC decoder error ID
-	VoErrAacMdoule        = 0x82210000
-	VoErrAacUnsfileformat = (VoErrAacMdoule | 0xF001)
-	VoErrAacUnsprofile    = (VoErrAacMdoule | 0xF002)
+	// VoErrAacModule - AAC decoder error ID
+	VoErrAacModule        = 0x82210000
+	VoErrAacUnsfileformat = VoErrAacModule | 0xF001
+	VoErrAacUnsprofile    = VoErrAacModule | 0xF002
 
-	// The base param ID for AUDIO codec
+	// VoPidAudioBase - The base param ID for AUDIO codec
 	VoPidAudioBase = 0x42000000
-	// The format data of audio in track
-	VoPidAudioFormat = (VoPidAudioBase | 0x0001)
-	// The sample rate of audio
-	VoPidAudioSampleRate = (VoPidAudioBase | 0x0002)
-	// The channel of audio
-	VoPidAudioChannels = (VoPidAudioBase | 0x0003)
-	// The bit rate of audio
-	VoPidAudioBitrate = (VoPidAudioBase | 0x0004)
-	// The channel mode of audio
-	VoPidAudioChannelmode = (VoPidAudioBase | 0x0005)
+	// VoPidAudioFormat - The format data of audio in track
+	VoPidAudioFormat = VoPidAudioBase | 0x0001
+	// VoPidAudioSampleRate - The sample rate of audio
+	VoPidAudioSampleRate = VoPidAudioBase | 0x0002
+	// VoPidAudioChannels - The channel of audio
+	VoPidAudioChannels = VoPidAudioBase | 0x0003
+	// VoPidAudioBitrate - The bit rate of audio
+	VoPidAudioBitrate = VoPidAudioBase | 0x0004
+	// VoPidAudioChannelmode - The channel mode of audio
+	VoPidAudioChannelmode = VoPidAudioBase | 0x0005
 
-	// The base of common param ID
+	// VoPidCommonBase - The base of common param ID
 	VoPidCommonBase = 0x40000000
-	// Query the memory needed; Reserved
-	VoPidCommonQueryMem = (VoPidCommonBase | 0)
-	// Set or get the input buffer type
-	VoPidCommonInputType = (VoPidCommonBase | 0)
-	// Query it has resource to be used
-	VoPidCommonHasResource = (VoPidCommonBase | 0)
-	// Decoder track header data
-	VoPidCommonHeadData = (VoPidCommonBase | 0)
-	// VoPidCommonFlush as defined in include/voIndex.h:182
-	VoPidCommonFlush = (VoPidCommonBase | 0)
+	// VoPidCommonQueryMem - Query the memory needed; Reserved
+	VoPidCommonQueryMem = VoPidCommonBase
+	// VoPidCommonInputType - Set or get the input buffer type
+	VoPidCommonInputType = VoPidCommonBase
+	// VoPidCommonHasResource - Query it has resource to be used
+	VoPidCommonHasResource = VoPidCommonBase
+	// VoPidCommonHeadData - Decoder track header data
+	VoPidCommonHeadData = VoPidCommonBase
+	// VoPidCommonFlush .
+	VoPidCommonFlush = VoPidCommonBase
 )
 
 // Error codes.
@@ -58,7 +58,7 @@ const (
 	VoErrInputBufferSmall  = 0x80000005
 	VoErrOutputBufferSmall = 0x80000006
 	VoErrWrongStatus       = 0x80000007
-	VoErrWrongParamId      = 0x80000008
+	VoErrWrongParamID      = 0x80000008
 	VoErrLicenseError      = 0x80000009
 
 	VoErrAudioBase          = 0x82000000
@@ -194,8 +194,8 @@ func (v *VoCodecBuffer) cptr() *C.VO_CODECBUFFER {
 	return (*C.VO_CODECBUFFER)(unsafe.Pointer(v))
 }
 
-// AacencParam - the structure for AAC encoder input parameter.
-type AacencParam struct {
+// Param - the structure for AAC encoder input parameter.
+type Param struct {
 	// Audio file sample rate
 	SampleRate int32
 	// Encoder bit rate in bits/sec
@@ -210,21 +210,20 @@ var handle C.VO_HANDLE
 
 // Errors.
 var (
-	ErrFinish            = errors.New("aac: error finish")
-	ErrFailed            = errors.New("aac: process data failed")
-	ErrOutOfMemory       = errors.New("aac: out of memory")
-	ErrNotImplement      = errors.New("aac: feature not implemented")
-	ErrInvalidArg        = errors.New("aac: invalid argument")
-	ErrInputBufferSmall  = errors.New("aac: input buffer data too small")
-	ErrOutputBufferSmall = errors.New("aac: output buffer size too small")
-	ErrWrongStatus       = errors.New("aac: wrong encoder run-time status")
-	ErrWrongParamId      = errors.New("aac: wrong parameter id")
-	ErrLicenseError      = errors.New("aac: license error")
-
-	ErrAudioBase          = errors.New("aac: error audio base")
-	ErrAudioUnsChannel    = errors.New("aac: unsupported number of channel")
-	ErrAudioUnsSampleRate = errors.New("aac: unsupported sample rate")
-	ErrAudioUnsFeature    = errors.New("aac: unsupported feature")
+	ErrFinish             = errors.New("error finish")
+	ErrFailed             = errors.New("process data failed")
+	ErrOutOfMemory        = errors.New("out of memory")
+	ErrNotImplement       = errors.New("feature not implemented")
+	ErrInvalidArg         = errors.New("invalid argument")
+	ErrInputBufferSmall   = errors.New("input buffer data too small")
+	ErrOutputBufferSmall  = errors.New("output buffer size too small")
+	ErrWrongStatus        = errors.New("wrong encoder run-time status")
+	ErrWrongParamID       = errors.New("wrong parameter id")
+	ErrLicenseError       = errors.New("license error")
+	ErrAudioBase          = errors.New("error audio base")
+	ErrAudioUnsChannel    = errors.New("unsupported number of channel")
+	ErrAudioUnsSampleRate = errors.New("unsupported sample rate")
+	ErrAudioUnsFeature    = errors.New("unsupported feature")
 )
 
 // ErrorFromResult returns error for result code
@@ -248,8 +247,8 @@ func ErrorFromResult(r uint) error {
 		return ErrOutputBufferSmall
 	case VoErrWrongStatus:
 		return ErrWrongStatus
-	case VoErrWrongParamId:
-		return ErrWrongParamId
+	case VoErrWrongParamID:
+		return ErrWrongParamID
 	case VoErrLicenseError:
 		return ErrLicenseError
 	case VoErrAudioBase:
@@ -270,6 +269,7 @@ func Init(vtype int32) uint {
 	cvtype := (C.VO_AUDIO_CODINGTYPE)(vtype)
 	ret := C.voAACEncInit(&handle, cvtype, nil)
 	v := (uint)(ret)
+
 	return v
 }
 
@@ -278,6 +278,7 @@ func SetInputData(pinput *VoCodecBuffer) uint {
 	cpinput := pinput.cptr()
 	ret := C.voAACEncSetInputData(handle, cpinput)
 	v := (uint)(ret)
+
 	return v
 }
 
@@ -287,6 +288,7 @@ func GetOutputData(poutbuffer *VoCodecBuffer, poutinfo *VoAudioOutputinfo) uint 
 	cpoutinfo := poutinfo.cptr()
 	ret := C.voAACEncGetOutputData(handle, cpoutbuffer, cpoutinfo)
 	v := (uint)(ret)
+
 	return v
 }
 
@@ -296,6 +298,7 @@ func SetParam(uparamid int, pdata unsafe.Pointer) uint {
 	cpdata := (C.VO_PTR)(pdata)
 	ret := C.voAACEncSetParam(handle, cuparamid, cpdata)
 	v := (uint)(ret)
+
 	return v
 }
 
@@ -305,6 +308,7 @@ func GetParam(uparamid int, pdata unsafe.Pointer) uint {
 	cpdata := (C.VO_PTR)(pdata)
 	ret := C.voAACEncGetParam(handle, cuparamid, cpdata)
 	v := (uint)(ret)
+
 	return v
 }
 
@@ -312,5 +316,6 @@ func GetParam(uparamid int, pdata unsafe.Pointer) uint {
 func Uninit() uint {
 	ret := C.voAACEncUninit(handle)
 	v := (uint)(ret)
+
 	return v
 }

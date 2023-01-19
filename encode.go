@@ -1,10 +1,12 @@
-// Package aac provides AAC codec encoder based on [VisualOn AAC encoder](https://github.com/mstorsjo/vo-aacenc) library.
+// Package aac provides AAC codec encoder based on VisualOn AAC encoder library.
 package aac
 
 //#include <stdlib.h>
 import "C"
 
 import (
+	"errors"
+	"fmt"
 	"io"
 	"unsafe"
 
@@ -31,8 +33,8 @@ type Encoder struct {
 }
 
 // NewEncoder returns new AAC encoder.
-func NewEncoder(w io.Writer, opts *Options) (e *Encoder, err error) {
-	e = &Encoder{}
+func NewEncoder(w io.Writer, opts *Options) (*Encoder, error) {
+	e := &Encoder{}
 	e.w = w
 
 	if opts.BitRate == 0 {
@@ -40,12 +42,12 @@ func NewEncoder(w io.Writer, opts *Options) (e *Encoder, err error) {
 	}
 
 	ret := aacenc.Init(aacenc.VoAudioCodingAac)
-	err = aacenc.ErrorFromResult(ret)
+	err := aacenc.ErrorFromResult(ret)
 	if err != nil {
-		return
+		return nil, fmt.Errorf("aac: %w", err)
 	}
 
-	var params aacenc.AacencParam
+	var params aacenc.Param
 	params.SampleRate = int32(opts.SampleRate)
 	params.BitRate = int32(opts.BitRate)
 	params.NChannels = int16(opts.NumChannels)
@@ -54,25 +56,25 @@ func NewEncoder(w io.Writer, opts *Options) (e *Encoder, err error) {
 	ret = aacenc.SetParam(aacenc.VoPidAacEncparam, unsafe.Pointer(&params))
 	err = aacenc.ErrorFromResult(ret)
 	if err != nil {
-		return
+		return nil, fmt.Errorf("aac: %w", err)
 	}
 
-	e.insize = int(opts.NumChannels) * 2 * 1024
+	e.insize = opts.NumChannels * 2 * 1024
 
 	e.inbuf = make([]byte, e.insize)
 	e.outbuf = make([]byte, 20480)
 
-	return
+	return e, nil
 }
 
 // Encode encodes data from reader.
-func (e *Encoder) Encode(r io.Reader) (err error) {
+func (e *Encoder) Encode(r io.Reader) error {
 	inputEmpty := false
 	for !inputEmpty {
 		n, err := r.Read(e.inbuf)
 		if err != nil {
-			if err != io.EOF {
-				return err
+			if !errors.Is(err, io.EOF) {
+				return fmt.Errorf("aac: %w", err)
 			}
 			inputEmpty = true
 		}
@@ -90,7 +92,7 @@ func (e *Encoder) Encode(r io.Reader) (err error) {
 		ret := aacenc.SetInputData(&input)
 		err = aacenc.ErrorFromResult(ret)
 		if err != nil {
-			return err
+			return fmt.Errorf("aac: %w", err)
 		}
 
 		outputEmpty := false
@@ -101,15 +103,15 @@ func (e *Encoder) Encode(r io.Reader) (err error) {
 			ret = aacenc.GetOutputData(&output, &outinfo)
 			err = aacenc.ErrorFromResult(ret)
 			if err != nil {
-				if err != aacenc.ErrInputBufferSmall {
-					return err
+				if !errors.Is(err, aacenc.ErrInputBufferSmall) {
+					return fmt.Errorf("aac: %w", err)
 				}
 				outputEmpty = true
 			}
 
 			_, err = e.w.Write(C.GoBytes(output.Buffer, C.int(output.Length)))
 			if err != nil {
-				return err
+				return fmt.Errorf("aac: %w", err)
 			}
 			C.free(output.Buffer)
 		}

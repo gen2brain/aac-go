@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"io/ioutil"
 	"os"
 
 	"github.com/gen2brain/aac-go"
@@ -42,7 +41,7 @@ func main() {
 		panic(err)
 	}
 
-	err = ioutil.WriteFile("test.aac", buf.Bytes(), 0644)
+	err = os.WriteFile("test.aac", buf.Bytes(), 0644)
 	if err != nil {
 		panic(err)
 	}

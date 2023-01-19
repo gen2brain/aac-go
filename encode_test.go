@@ -1,12 +1,12 @@
-package aac
+package aac_test
 
 import (
 	"bytes"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
 
+	"github.com/gen2brain/aac-go"
 	"github.com/youpy/go-wav"
 )
 
@@ -24,11 +24,11 @@ func TestEncode(t *testing.T) {
 
 	buf := bytes.NewBuffer(make([]byte, 0))
 
-	opts := &Options{}
+	opts := &aac.Options{}
 	opts.SampleRate = int(f.SampleRate)
 	opts.NumChannels = int(f.NumChannels)
 
-	enc, err := NewEncoder(buf, opts)
+	enc, err := aac.NewEncoder(buf, opts)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -43,7 +43,7 @@ func TestEncode(t *testing.T) {
 		t.Error(err)
 	}
 
-	err = ioutil.WriteFile(filepath.Join(os.TempDir(), "test.aac"), buf.Bytes(), 0644)
+	err = os.WriteFile(filepath.Join(os.TempDir(), "test.aac"), buf.Bytes(), 0640)
 	if err != nil {
 		t.Error(err)
 	}
