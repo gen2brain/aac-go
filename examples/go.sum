@@ -1,7 +1,5 @@
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/gen2brain/aac-go v0.0.0-20180306134136-400c68157565 h1:5cGj3eU0uEzpHDFwqmcKc6zM1+HNvzPIR6ZY7T1/MsA=
-github.com/gen2brain/aac-go v0.0.0-20180306134136-400c68157565/go.mod h1:Tymn6PFuf0SYIYLOWIZWtatGOmi/5FLUNawJt9OgxJw=
 github.com/gen2brain/malgo v0.11.10 h1:u41QchDBS7Z2rwEVPu7uycK6HA8IyzKoUOhLU7IvYW4=
 github.com/gen2brain/malgo v0.11.10/go.mod h1:f9TtuN7DVrXMiV/yIceMeWpvanyVzJQMlBecJFVMxww=
 github.com/google/go-cmp v0.5.6 h1:BKbKCqvP6I+rmFHt06ZmyQtvB8xAkWdhFyr0ZUNZcxQ=

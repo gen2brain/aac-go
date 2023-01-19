@@ -2,8 +2,10 @@ module examples
 
 go 1.19
 
+replace github.com/gen2brain/aac-go => ../
+
 require (
-	github.com/gen2brain/aac-go v0.0.0-20180306134136-400c68157565
+	github.com/gen2brain/aac-go v0.0.0-00010101000000-000000000000
 	github.com/gen2brain/malgo v0.11.10
 	github.com/youpy/go-wav v0.3.2
 )
